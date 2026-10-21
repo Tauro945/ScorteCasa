@@ -130,7 +130,7 @@ input,select,textarea{min-height:44px;font-size:16px}
 <script>
 let CATS={PULIZIA:["Bagno","Pavimenti","Lavatrice","Asciugatrice","Lavastoviglie","Vetri","Aspirapolvere","Altri"],ALIMENTARI:["Pasta","Cereali","Pastine","Riso","Snack","Altri"],COSMETICA:["Corpo","Viso","Doccia","Altri"],FARMACI:["Leo","Influenza","Allergia","Altri"]};
 let EXP=["ALIMENTARI","FARMACI"];let COL={};const DEFC={PULIZIA:0,ALIMENTARI:1,FARMACI:2,COSMETICA:3};const AV=[0,1,2,3,6,7,8,9];const KEY="casa-inventario-v1",CKEY="casa-categorie-v1",TKEY="casa-ultima-modifica-v1",$=s=>document.querySelector(s);let LM=null;const touch=()=>{LM=new Date().toISOString();try{localStorage.setItem(TKEY,LM)}catch(e){}};const lastMod=()=>{try{return localStorage.getItem(TKEY)||LM}catch(e){return LM}};
-const VER="1.9",BKEY="casa-ultimo-backup-v1",RKEY="casa-ultimo-ripristino-v1";const stamp=k=>{try{localStorage.setItem(k,new Date().toISOString())}catch(e){}};const getStamp=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const VER="2.0",BKEY="casa-ultimo-backup-v1",RKEY="casa-ultimo-ripristino-v1";const stamp=k=>{try{localStorage.setItem(k,new Date().toISOString())}catch(e){}};const getStamp=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let items=[],view="home",filter="TUTTI",editId=null,pend=null,expAsk=null;
 try{items=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){items=[]}
@@ -195,7 +195,7 @@ else if(a==="del"){expAsk=null;if(pend===id){items=items.filter(x=>x.id!==id);pe
 let DL=null;try{window.claude&&window.claude.use("downloads").then(d=>{DL=d}).catch(()=>{})}catch(e){}
 $("#exp-b").onclick=async()=>{const j=JSON.stringify({items,cats:CATS,exp:EXP,col:COL},null,2);$("#bk").value=j;
 let d=DL;if(!d){try{d=window.claude?await window.claude.use("downloads"):null}catch(e){}}
-const n=new Date(),p=x=>String(x).padStart(2,"0"),fn=`scorte-casa-backup-${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}.json`;
+const n=new Date(),p=x=>String(x).padStart(2,"0"),fn=`scorte-casa-backup-${p(n.getDate())}-${p(n.getMonth()+1)}-${n.getFullYear()}_${p(n.getHours())}-${p(n.getMinutes())}.json`;
 if(!d){try{const u=URL.createObjectURL(new Blob([j],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);stamp(BKEY);renderBk();msg("Backup scaricato: "+fn)}catch(e){msg("Download non riuscito: riprova.")}return}
 try{await d.save({filename:fn,data:j});stamp(BKEY);renderBk();msg("Backup salvato: "+fn)}catch(e){if(e&&e.code==="declined")msg("Salvataggio annullato.");else{msg("Download non riuscito ("+((e&&(e.code||e.message))||"errore")+").")}}};
 
