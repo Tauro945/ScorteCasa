@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark"><title>Scorte di casa</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#eef2f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1a19" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Scorte">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f1;--card:#fff;--ink:#1b2a29;--mut:#5d6f6d;--line:#d5dedc;--acc:#0f766e;--red:#c0392b;--amb:#b45f06;--grn:#2f7d4f;--m0:#2563eb;--m1:#7c3aed;--m2:#0891b2;--m3:#be185d;--m4:#4f46e5;--m5:#0284c7;--m6:#475569;--m7:#c026d3;--m8:#1f2937;--m9:#9d4e7d;--m10:#1e3a8a;--m11:#6b21a8;--nb:#12302d;--nf:#c3d9d5;--na:#4fd1c5;--nat:#0c2523;--nbd:#2f5f59;box-sizing:border-box}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a19;--card:#172524;--ink:#e6efed;--mut:#9bb0ad;--line:#2a3d3b;--acc:#4fd1c5;--red:#ff7b6b;--amb:#f0a64a;--grn:#6fcf97;--m0:#7aa7ff;--m1:#b79cff;--m2:#22d3ee;--m3:#ff8fc1;--m4:#9a95ff;--m5:#7dd3fc;--m6:#a9b8cc;--m7:#e879f9;--m8:#e5e7eb;--m9:#e0a5c8;--m10:#c7d2fe;--m11:#d8b4fe;--nb:#15504b;--nf:#d2ebe7;--na:#4fd1c5;--nat:#0c2523;--nbd:#4aa59c}}
+:root[data-theme="dark"]{--bg:#0f1a19;--card:#172524;--ink:#e6efed;--mut:#9bb0ad;--line:#2a3d3b;--acc:#4fd1c5;--red:#ff7b6b;--amb:#f0a64a;--grn:#6fcf97;--m0:#7aa7ff;--m1:#b79cff;--m2:#22d3ee;--m3:#ff8fc1;--m4:#9a95ff;--m5:#7dd3fc;--m6:#a9b8cc;--m7:#e879f9;--m8:#e5e7eb;--m9:#e0a5c8;--m10:#c7d2fe;--m11:#d8b4fe;--nb:#15504b;--nf:#d2ebe7;--na:#4fd1c5;--nat:#0c2523;--nbd:#4aa59c}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+body::before{content:"";position:fixed;inset:0 0 auto 0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:40;pointer-events:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Schibsted Grotesk",system-ui,sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px 16px 48px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;background:var(--nb);border-top:1px solid var(--nbd);box-shadow:0 -6px 18px rgba(0,0,0,.22);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;border-radius:12px;min-height:52px;font:800 17px "Schibsted Grotesk",system-ui,sans-serif;color:var(--nf);cursor:pointer}
+nav button.on{background:var(--na);color:var(--nat)}
+nav button:focus-visible{outline:3px solid var(--na);outline-offset:2px}
+h1{font-size:clamp(28px,6vw,42px);line-height:1.1;font-weight:800;margin:4px 0 16px;letter-spacing:-.02em}
+h2{font-size:20px;margin:28px 0 8px;font-weight:800}
+h3{font-size:14px;margin:14px 0 6px;color:var(--mut);font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.tile b{display:block;font-size:30px;line-height:1.1;font-weight:800}
+.tile span{font-size:13px;color:var(--mut)}
+.tile.r b{color:var(--red)}.tile.a b{color:var(--amb)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--grn);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.row.s-finito{border-left-color:var(--red)}.row.s-esaurimento{border-left-color:var(--amb)}
+.row.h-scadenza{--hc:var(--amb)}.row.h-scaduto{--hc:var(--red)}.row.t-amb{--tc:var(--amb)}
+.row.h-scadenza,.row.h-scaduto{border-left-color:transparent;background:linear-gradient(to bottom,var(--tc,var(--grn)) 50%,var(--hc) 50%) left top/5px 100% no-repeat border-box,var(--card)}
+.nm{flex:1 1 180px;min-width:0}.nm b{display:block;overflow-wrap:anywhere}.nm small{color:var(--mut);font-size:13px}
+.tag{font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--grn) 16%,transparent);color:var(--grn);white-space:nowrap}
+.tag.finito,.tag.scaduto{background:color-mix(in srgb,var(--red) 16%,transparent);color:var(--red)}
+.tag.esaurimento,.tag.scadenza{background:color-mix(in srgb,var(--amb) 18%,transparent);color:var(--amb)}
+.tag.senza{background:color-mix(in srgb,var(--mut) 18%,transparent);color:var(--mut)}
+.qty{display:flex;align-items:center;gap:6px}.qty span{min-width:26px;text-align:center;font-weight:800;font-size:18px}
+button{font:inherit}
+.qty button,.mini{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer}
+.qty button{width:36px;height:36px;font-size:20px;line-height:1}
+.mini{padding:6px 10px;font-size:13px}.mini.del{color:var(--red)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.empty{color:var(--mut);padding:10px 0}
+form,.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mut);font-weight:600}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%}
+.wide{grid-column:1/-1}
+.btns{display:flex;gap:8px;flex-wrap:wrap;grid-column:1/-1}
+.pri{background:var(--acc);color:var(--bg);border:0;border-radius:8px;padding:10px 18px;font-weight:800;cursor:pointer}
+.sec{background:none;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:600}
+#msg{font-size:14px;color:var(--acc);min-height:20px;margin:8px 0 0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+button,select,input,textarea{touch-action:manipulation}
+main{padding-top:max(16px,calc(env(safe-area-inset-top,0px) - 24px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+input,select,textarea{min-height:44px;font-size:16px}
+.chips{flex-wrap:nowrap;overflow-x:auto;margin-left:-16px;margin-right:-16px;padding:0 16px 6px;scrollbar-width:none}
+.chip{flex:none;min-height:40px}
+#msg{position:fixed;left:12px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:30;margin:0;min-height:0;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#msg:empty{display:none}
+.cat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.ch{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.ch b{font-size:17px;margin-right:auto;overflow-wrap:anywhere}
+.chk{flex-direction:row;align-items:center;gap:6px;font-size:14px;color:var(--ink)}
+.chk input{width:22px;height:22px;min-height:0;padding:0}
+.subs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.sc{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:99px;padding:2px 4px 2px 12px;font-size:14px;background:var(--bg)}
+.sc .x{border:0;background:none;color:var(--mut);font-size:18px;min-width:36px;min-height:36px;cursor:pointer}
+.sc .x.d{color:var(--red)}
+.sc .rn{width:130px;min-height:36px;padding:4px 8px}
+.rn{width:auto;flex:1 1 140px}
+.addsub{display:flex;gap:8px}.addsub input{flex:1}
+.cat+.box{margin-top:14px}
+.row.editing{outline:2px solid var(--acc);outline-offset:1px}
+.xa{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px;border-top:1px dashed var(--line);padding-top:10px}
+.xa label{flex:1 1 150px}
+.sbox{margin:18px 0 0}
+#res h2{margin-top:18px}
+.fold{background:var(--card);border:1px solid var(--line);border-radius:10px;margin:24px 0 8px}
+.fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:10px 16px;font-weight:800;font-size:18px}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::after{content:"▾";margin-left:auto;color:var(--mut)}
+.fold[open]>summary::after{content:"▴"}
+.fold>summary:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.fold .cnt{font-size:13px;font-weight:600;color:var(--mut)}
+.fold>.in{padding:0 14px 14px}
+.fold .cat{border-left:5px solid var(--mc,var(--line));padding:10px 12px;margin-bottom:8px}
+.fold .subs{margin:6px 0}
+.mt{font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;background:color-mix(in srgb,var(--mc) 16%,transparent);color:var(--mc);border:1px solid color-mix(in srgb,var(--mc) 40%,transparent);white-space:nowrap;letter-spacing:.02em}
+.nm small .mt{margin-right:6px}
+.mh{border-left:6px solid var(--mc);padding-left:10px}
+.upd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;font-size:clamp(23px,4.8vw,34px);font-weight:800;line-height:1.15;letter-spacing:.02em;color:var(--mut);margin:6px 0 10px}@media(max-width:560px){.upd{font-size:23px}}
+.ver{margin-left:auto;font-size:.6em;color:var(--acc);white-space:nowrap}
+.sw i,.swb i{display:inline-block;width:14px;height:14px;border-radius:50%;background:var(--mc);vertical-align:-2px;margin-right:6px}
+.pal{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 2px;padding:10px;border:1px dashed var(--line);border-radius:8px}
+.pal .pl{flex:1 1 100%;font-size:13px;color:var(--mut);font-weight:600}
+.swb{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:99px;padding:8px 14px;min-height:40px;cursor:pointer;font-weight:600;font-size:14px}
+.swb:hover,.swb:focus-visible{border-color:var(--mc)}
+.chip[style]::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mc);margin-right:7px;box-shadow:0 0 0 2px var(--card)}
+@media(pointer:coarse){.qty button{width:44px;height:44px;font-size:24px}.qty span{min-width:32px;font-size:20px}.mini{min-height:44px;font-size:15px;padding:8px 14px}}
+@media(max-width:560px){.nm{flex:1 1 100%}.qty{margin-left:auto}.row .mini{flex:1 1 40%}form{grid-template-columns:1fr 1fr;padding:14px}#expw{grid-column:1/-1}.pri,.sec{min-height:48px;flex:1}h1{font-size:28px}}
+</style></head><body><main>
+<nav><button data-nav="home" class="on">Riepilogo</button><button data-nav="manage">Prodotti</button></nav>
+<section id="home"><div id="ht"></div><div class="sbox"><input id="q" type="search" placeholder="Cerca un prodotto per nome" aria-label="Cerca un prodotto per nome" autocomplete="off" enterkeyhint="search"></div><div id="res"></div><div id="hm"></div></section>
+<section id="manage" hidden>
+<h1>Aggiungi o modifica prodotti</h1>
+<form id="f">
+<label>Categoria<select id="cat"></select></label>
+<label>Sottocategoria<select id="sub"></select></label>
+<label class="wide">Nome prodotto<input id="name" required maxlength="80" placeholder="Es. Spaghetti n. 5"></label>
+<label>Quantità in casa<input id="qty" type="number" min="0" step="1" value="1" inputmode="numeric"></label>
+<label>Soglia minima<input id="min" type="number" min="0" step="1" value="0" inputmode="numeric"></label>
+<label id="expw">Scadenza<input id="exp" type="date"></label>
+<div class="btns"><button class="pri" id="ok" type="submit">Aggiungi prodotto</button><button class="sec" id="no" type="button" hidden>Annulla modifica</button></div>
+</form>
+<p id="msg" role="status"></p>
+<div id="list"></div>
+<details class="fold" id="catsd"><summary>Categorie <span class="cnt" id="catsum"></span></summary><div class="in"><p class="empty" style="margin:0 0 10px">Aggiungi, rinomina o elimina macrocategorie e sottocategorie. Una categoria che contiene prodotti non si può eliminare: spostali prima con Modifica nella lista sopra.</p><div id="cats"></div></div></details><h2>Backup</h2>
+<div class="box"><p class="wide empty" style="margin:0">I dati restano in questo browser. Per spostarli o salvarli, genera il backup: viene scaricato un file .json. Per ripristinare, premi Ripristina da file e scegli il .json. Il ripristino sostituisce i dati attuali.</p>
+<p class="wide" id="bki" style="margin:0;font-size:15px;line-height:1.7"></p>
+<textarea id="bk" hidden></textarea>
+<div class="btns"><button class="sec" id="exp-b" type="button">Genera backup</button><button class="sec" id="imp-b" type="button" hidden>Ripristina</button><button class="sec" id="imp-f" type="button">Ripristina da file</button><input type="file" id="bk-f" accept=".json,application/json" hidden></div></div>
+</section>
+</main>
+<script>
+let CATS={PULIZIA:["Bagno","Pavimenti","Lavatrice","Asciugatrice","Lavastoviglie","Vetri","Aspirapolvere","Altri"],ALIMENTARI:["Pasta","Cereali","Pastine","Riso","Snack","Altri"],COSMETICA:["Corpo","Viso","Doccia","Altri"],FARMACI:["Leo","Influenza","Allergia","Altri"]};
+let EXP=["ALIMENTARI","FARMACI"];let COL={};const DEFC={PULIZIA:0,ALIMENTARI:1,FARMACI:2,COSMETICA:3};const AV=[0,1,2,3,6,7,8,9];const KEY="casa-inventario-v1",CKEY="casa-categorie-v1",TKEY="casa-ultima-modifica-v1",$=s=>document.querySelector(s);let LM=null;const touch=()=>{LM=new Date().toISOString();try{localStorage.setItem(TKEY,LM)}catch(e){}};const lastMod=()=>{try{return localStorage.getItem(TKEY)||LM}catch(e){return LM}};
+const VER="1.8",BKEY="casa-ultimo-backup-v1",RKEY="casa-ultimo-ripristino-v1";const stamp=k=>{try{localStorage.setItem(k,new Date().toISOString())}catch(e){}};const getStamp=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let items=[],view="home",filter="TUTTI",editId=null,pend=null,expAsk=null;
+try{items=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){items=[]}
+if(!Array.isArray(items))items=[];
+try{const c=JSON.parse(localStorage.getItem(CKEY));if(c&&c.cats&&Object.keys(c.cats).length&&Object.values(c.cats).every(Array.isArray)){CATS=c.cats;EXP=c.exp||[];COL=c.col||{}}}catch(e){}ensureCol();
+const save=()=>{touch();try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){msg("Impossibile salvare in questo browser: genera un backup.")}};
+let mt;const msg=(t,ms=3500)=>{const m=$("#msg");m.textContent=t;clearTimeout(mt);if(t)mt=setTimeout(()=>{m.textContent=""},ms)};
+const st=i=>i.qty<=0?"finito":i.qty<=i.min?"esaurimento":"ok";
+const ex=i=>{if(i.qty<=0||!EXP.includes(i.cat))return null;if(!i.exp)return"senza";const d=(new Date(i.exp+"T00:00")-new Date().setHours(0,0,0,0))/864e5;return d<0?"scaduto":d<=30?"scadenza":null};
+const cmp=(a,b)=>String(a).localeCompare(String(b),'it',{sensitivity:'base',numeric:true}),byName=(a,b)=>cmp(a.name,b.name),mk=()=>Object.keys(CATS).sort(cmp),sk=c=>[...(CATS[c]||[])].sort(cmp);
+const rank=i=>st(i)==="finito"?0:ex(i)==="scaduto"?1:ex(i)==="scadenza"?2:st(i)==="esaurimento"?3:4;
+const LBL={finito:"Finito",esaurimento:"In esaurimento",ok:"Disponibile",scaduto:"Scaduto",scadenza:"In scadenza",senza:"Scadenza mancante"};
+function ensureCol(){for(const k of Object.keys(COL))if(!CATS[k]||!AV.includes(COL[k]))delete COL[k];const u=new Set(Object.values(COL));for(const c of Object.keys(CATS)){if(COL[c]!==undefined)continue;let k=DEFC[c];if(k===undefined||u.has(k)){k=AV.find(x=>!u.has(x));if(k===undefined)k=AV[Object.keys(COL).length%AV.length]}COL[c]=k;u.add(k)}}
+function row(i,m){const s=st(i),e=ex(i);
+return `<div class="row s-${s}${m&&i.id===editId?" editing":""}${(s==="ok"&&(e==="scadenza"||e==="scaduto"))||(s==="esaurimento"&&e==="scaduto")?" h-"+e+(s==="esaurimento"?" t-amb":""):""}" data-id="${i.id}"><div class="nm"><b>${esc(i.name)}</b><small><span class="mt" style="--mc:var(--m${COL[i.cat]??0})">${esc(i.cat)}</span>${esc(i.sub)} · minimo ${i.min}${i.exp&&EXP.includes(i.cat)?" · scade il "+new Date(i.exp+"T00:00").toLocaleDateString("it-IT"):""}</small></div>
+<span class="tag ${s}">${LBL[s]}</span>${e?`<span class="tag ${e}">${LBL[e]}</span>`:""}
+<div class="qty"><button data-act="dec" aria-label="Diminuisci">−</button><span>${i.qty}</span><button data-act="inc" aria-label="Aumenta">+</button></div>
+${m?`<button class="mini" data-act="edit">Modifica</button><button class="mini del" data-act="del">${pend===i.id?"Conferma?":"Elimina"}</button>`:""}${expAsk===i.id?`<div class="xa"><label>Aggiorna scadenza<input type="date" class="xd" value="${esc(i.exp||"")}"></label><button class="mini" data-act="exp-ok">Salva scadenza</button><button class="mini" data-act="exp-no">Lascia così</button></div>`:""}</div>`}
+function grouped(m,f){let h="";for(const c of mk()){if(f&&f!=="TUTTI"&&f!==c)continue;const ci=items.filter(i=>i.cat===c);if(!ci.length)continue;
+h+=`<h2 class="mh" style="--mc:var(--m${COL[c]??0})">${esc(c)} (${ci.length})</h2>`;for(const s of sk(c)){const si=ci.filter(i=>i.sub===s).sort(byName);if(si.length)h+=`<h3>${esc(s)}</h3>`+si.map(i=>row(i,m)).join("")}}
+return h||`<p class="empty">Nessun prodotto inserito.</p>`}
+const fmtD=v=>{if(!v)return"—";const d=new Date(v);if(isNaN(d))return"—";const p=x=>String(x).padStart(2,"0");return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`};
+const fmtLM=()=>fmtD(lastMod());
+const renderBk=()=>{const f=k=>{const v=getStamp(k);return v?fmtD(v):"mai"};$("#bki").innerHTML=`Ultimo backup eseguito: <b>${f(BKEY)}</b><br>Ultimo backup caricato: <b>${f(RKEY)}</b>`};
+function renderHome(){const need=items.filter(i=>st(i)!=="ok"||(ex(i)&&ex(i)!=="senza")).sort((a,b)=>rank(a)-rank(b)||byName(a,b));
+const n=k=>items.filter(i=>st(i)===k).length,sc=items.filter(i=>ex(i)==="scaduto"||ex(i)==="scadenza").length;
+let h=`<div class="upd"><span>AGGIORNATA AL <span style="white-space:nowrap">${fmtLM()}</span></span><span class="ver">V${VER}</span></div>${items.length?`<h1>${need.length?need.length+(need.length===1?" prodotto da controllare":" prodotti da controllare"):"Tutto a posto"}</h1>`:""}
+<div class="tiles"><div class="tile r"><b>${n("finito")}</b><span>Finiti</span></div><div class="tile a"><b>${n("esaurimento")}</b><span>In esaurimento</span></div><div class="tile a"><b>${sc}</b><span>Scaduti o in scadenza</span></div><div class="tile"><b>${items.length}</b><span>Prodotti totali</span></div></div>`;$("#ht").innerHTML=h;h="";
+if(!items.length)h+=`<p class="empty">Apri la pagina Prodotti per aggiungere quello che hai in casa.</p>`;
+else{h+=`<h2>Da controllare</h2>`+(need.length?need.map(i=>row(i)).join(""):`<p class="empty">Nessun prodotto da controllare.</p>`);
+h+=`<div class="chips">`+["TUTTI",...mk()].map(c=>`<button class="chip${filter===c?" on":""}" data-f="${esc(c)}"${c==="TUTTI"?"":` style="--mc:var(--m${COL[c]??0})"`}>${c==="TUTTI"?"Tutti":esc(c)}</button>`).join("")+`</div>`+grouped(false,filter)}
+$("#hm").innerHTML=h;renderSearch()}
+function renderManage(){const c=$("#cat").value,s=$("#sub").value,si=items.filter(i=>i.cat===c&&i.sub===s).sort(byName);$("#list").innerHTML=`<h2 class="mh" style="--mc:var(--m${COL[c]??0})">${esc(c)} › ${esc(s)} (${si.length})</h2>`+(si.length?si.map(i=>row(i,true)).join(""):`<p class="empty">Nessun prodotto in questa sottocategoria.</p>`)}
+const fold=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+function renderSearch(){const q=$("#q").value.trim();if(!q){$("#res").innerHTML="";return}
+const r=items.filter(i=>fold(i.name).includes(fold(q))).sort(byName);
+$("#res").innerHTML=`<h2>Risultati per “${esc(q)}” (${r.length})</h2>`+(r.length?r.map(i=>row(i)).join(""):`<p class="empty">Nessun prodotto con questo nome.</p>`)}
+$("#q").oninput=renderSearch;
+function render(){$("#home").hidden=view!=="home";$("#manage").hidden=view!=="manage";document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.nav===view));view==="home"?renderHome():renderManage()}
+function fillSub(v){const l=sk($("#cat").value);$("#sub").innerHTML=l.map(s=>`<option>${esc(s)}</option>`).join("");if(v&&l.includes(v))$("#sub").value=v;$("#expw").hidden=!EXP.includes($("#cat").value)}
+function fillCat(v0,w0){const v=v0||$("#cat").value,w=w0||$("#sub").value;$("#cat").innerHTML=mk().map(c=>`<option>${esc(c)}</option>`).join("");if(CATS[v])$("#cat").value=v;fillSub(w)}
+fillCat();
+let sel=null,dupKey=null;$("#cat").onchange=()=>{fillSub();if(!editId)sel=[$("#cat").value,$("#sub").value];renderManage()};$("#sub").onchange=()=>{if(!editId)sel=[$("#cat").value,$("#sub").value];renderManage()};
+function reset(){dupKey=null;const c0=$("#cat").value,s0=$("#sub").value;editId=null;$("#f").reset();$("#qty").value=1;$("#min").value=0;if(CATS[c0])$("#cat").value=c0;fillSub(s0);$("#ok").textContent="Aggiungi prodotto";$("#no").hidden=true}
+$("#no").onclick=()=>{reset();msg("");renderManage()};
+$("#f").onsubmit=e=>{e.preventDefault();const name=$("#name").value.trim();if(!name)return;
+const dp=items.find(x=>x.id!==editId&&fold(x.name)===fold(name));if(dp&&dupKey!==fold(name)){dupKey=fold(name);return msg("Attenzione: «"+dp.name+"» esiste già in "+dp.cat+" › "+dp.sub+". Premi di nuovo "+(editId?"Salva modifiche":"Aggiungi prodotto")+" per confermare.",6000)}
+const it={id:editId||Date.now().toString(36)+Math.random().toString(36).slice(2,5),cat:$("#cat").value,sub:$("#sub").value,name,qty:Math.max(0,parseInt($("#qty").value)||0),min:Math.max(0,parseInt($("#min").value)||0),exp:EXP.includes($("#cat").value)?$("#exp").value:""};
+const need0=EXP.includes(it.cat)&&!it.exp?" Attenzione: manca la scadenza.":"";
+if(editId){const o=items.find(i=>i.id===editId);items=items.map(i=>i.id===editId?it:i);const lost=o&&o.exp&&!it.exp&&!EXP.includes(it.cat)?" Attenzione: la nuova categoria non ha scadenza, la data è stata rimossa.":"";msg("Modifiche salvate."+lost+need0,lost||need0?6000:3500)}else{items.push(it);msg("Prodotto aggiunto."+need0,need0?6000:3500)}
+if(!editId)sel=[$("#cat").value,$("#sub").value];save();reset();render();if(matchMedia("(pointer:fine)").matches)$("#name").focus();else document.activeElement.blur()};
+document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
+if(t.dataset.nav){view=t.dataset.nav;pend=null;expAsk=null;render();window.scrollTo(0,0);return}
+if(t.dataset.f){filter=t.dataset.f;renderHome();return}
+const r=t.closest(".row"),id=r&&r.dataset.id,i=items.find(x=>x.id===id),a=t.dataset.act;if(!a||!i)return;
+if(a==="exp-ok"){const v=r.querySelector(".xd").value;if(!v)return msg("Scegli una data di scadenza.");i.exp=v;expAsk=null;save();msg("Scadenza aggiornata.");render();return}
+if(a==="exp-no"){expAsk=null;render();return}
+if(a==="inc"||a==="dec"){i.qty=Math.max(0,i.qty+(a==="inc"?1:-1));expAsk=EXP.includes(i.cat)&&i.qty>0?i.id:null;save();render()}
+else if(a==="edit"){expAsk=null;editId=i.id;$("#cat").value=i.cat;fillSub(i.sub);$("#name").value=i.name;$("#qty").value=i.qty;$("#min").value=i.min;$("#exp").value=i.exp||"";$("#ok").textContent="Salva modifiche";$("#no").hidden=false;renderManage();msg("Modifica in corso: "+i.name);window.scrollTo({top:0,behavior:"smooth"});if(matchMedia("(pointer:fine)").matches)$("#name").focus()}
+else if(a==="del"){expAsk=null;if(pend===id){items=items.filter(x=>x.id!==id);pend=null;save();msg("Prodotto eliminato.")}else pend=id;render()}});
+let DL=null;try{window.claude&&window.claude.use("downloads").then(d=>{DL=d}).catch(()=>{})}catch(e){}
+$("#exp-b").onclick=async()=>{const j=JSON.stringify({items,cats:CATS,exp:EXP,col:COL},null,2);$("#bk").value=j;
+let d=DL;if(!d){try{d=window.claude?await window.claude.use("downloads"):null}catch(e){}}
+const n=new Date(),p=x=>String(x).padStart(2,"0"),fn=`scorte-casa-backup-${n.getFullYear()}-${p(n.getMonth()+1)}-${p(n.getDate())}.json`;
+if(!d){try{const u=URL.createObjectURL(new Blob([j],{type:"application/json"})),a=document.createElement("a");a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);stamp(BKEY);renderBk();msg("Backup scaricato: "+fn)}catch(e){msg("Download non riuscito: riprova.")}return}
+try{await d.save({filename:fn,data:j});stamp(BKEY);renderBk();msg("Backup salvato: "+fn)}catch(e){if(e&&e.code==="declined")msg("Salvataggio annullato.");else{msg("Download non riuscito ("+((e&&(e.code||e.message))||"errore")+").")}}};
+
+$("#imp-b").onclick=()=>{try{const r=JSON.parse($("#bk").value),o=Array.isArray(r),d=o?r:r.items,C=o?CATS:r.cats,E=o?EXP:(r.exp||[]);if(!Array.isArray(d)||!C||!Object.values(C).every(Array.isArray)||d.some(x=>!x||!x.name||!C[x.cat]||!C[x.cat].includes(x.sub)))throw 0;items=d;CATS=C;EXP=E;if(!o&&r.col)COL=r.col;ensureCol();filter="TUTTI";ren=null;save();saveC();fillCat();renderCats();render();stamp(RKEY);renderBk();msg("Backup ripristinato: "+d.length+" prodotti.")}catch(e){msg("Backup non valido: scegli un file generato con Genera backup.")}};
+$("#imp-f").onclick=()=>$("#bk-f").click();
+$("#bk-f").onchange=async e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(!f)return;try{$("#bk").value=await f.text()}catch(x){return msg("Impossibile leggere il file.")}$("#imp-b").click()};
+let ren=null;let colPick=null;
+const CN=["Blu","Viola","Ciano","Rosa","","","Ardesia","Fucsia","Grafite","Malva"];
+const pal=c=>{const u=new Set(Object.entries(COL).filter(([k])=>k!==c).map(([,v])=>v)),f=AV.filter(k=>!u.has(k)&&k!==COL[c]);return `<div class="pal"><span class="pl">Colori disponibili</span>${f.length?f.map(k=>`<button class="swb" data-ca="col-set" data-k="${k}" style="--mc:var(--m${k})"><i></i>${CN[k]}</button>`).join(""):`<span class="empty">Nessun colore libero: cambia prima il colore di un'altra macrocategoria.</span>`}</div>`};
+const saveC=()=>{touch();try{localStorage.setItem(CKEY,JSON.stringify({cats:CATS,exp:EXP,col:COL}))}catch(e){}};
+const catsChanged=(v,w)=>{ensureCol();saveC();save();fillCat(v,w);renderCats();render()};
+const dup=(a,n,x)=>a.some(y=>y!==x&&y.toLowerCase()===n.toLowerCase());
+function renderCats(){let h='';
+for(const c of mk()){const mr=ren&&ren.c===c&&ren.s===undefined;
+h+=`<div class="cat" data-c="${esc(c)}" style="--mc:var(--m${COL[c]??0})"><div class="ch">${mr?`<input class="rn" value="${esc(c)}" maxlength="30" aria-label="Nuovo nome"><button class="mini" data-ca="rn-ok">Salva</button><button class="mini" data-ca="rn-no">Annulla</button>`:`<b>${esc(c)}</b><button class="mini" data-ca="rn-m">Rinomina</button><button class="mini sw" data-ca="col-m" aria-expanded="${colPick===c}" aria-label="Cambia colore di ${esc(c)}"><i></i>Colore</button>`}<label class="chk"><input type="checkbox" data-ca="exp"${EXP.includes(c)?' checked':''}> Ha scadenza</label><button class="mini del" data-ca="del-m">Elimina</button></div>${colPick===c?pal(c):""}<div class="subs">`;
+for(const s of sk(c)){h+=ren&&ren.c===c&&ren.s===s?`<span class="sc"><input class="rn" value="${esc(s)}" maxlength="30" aria-label="Nuovo nome"><button class="x" data-ca="rn-ok" aria-label="Salva">✓</button><button class="x" data-ca="rn-no" aria-label="Annulla">✕</button></span>`:`<span class="sc">${esc(s)}<button class="x" data-ca="rn-s" data-s="${esc(s)}" aria-label="Rinomina ${esc(s)}">✎</button><button class="x d" data-ca="del-s" data-s="${esc(s)}" aria-label="Elimina ${esc(s)}">×</button></span>`}
+h+=`</div><div class="addsub"><input class="ns" maxlength="30" placeholder="Nuova sottocategoria"><button class="mini" data-ca="add-s">Aggiungi</button></div></div>`}
+h+=`<div class="box"><label class="wide">Nuova macrocategoria<input id="nm" maxlength="30" placeholder="Es. CASA"></label><label class="chk wide"><input type="checkbox" id="nme"> Ha scadenza</label><div class="btns"><button class="pri" data-ca="add-m">Aggiungi macrocategoria</button></div></div>`;
+$('#cats').innerHTML=h;$('#catsum').textContent=mk().length+' macro · '+mk().reduce((a,c)=>a+CATS[c].length,0)+' sottocategorie'}
+$('#cats').addEventListener('click',e=>{const t=e.target.closest('button[data-ca]');if(!t)return;
+const a=t.dataset.ca,box=t.closest('.cat'),c=box&&box.dataset.c,s=t.dataset.s,cnt=f=>items.filter(f).length,val=el=>el.value.trim().replace(/\s+/g,' ');
+if(a==='add-m'){const n=val($('#nm')).toUpperCase();if(!n)return msg('Scrivi il nome della macrocategoria.');if(dup(Object.keys(CATS),n))return msg('Esiste già una macrocategoria con questo nome.');CATS[n]=['Altri'];if($('#nme').checked)EXP.push(n);msg('Macrocategoria aggiunta, con la sottocategoria Altri.');return catsChanged()}
+if(a==='add-s'){const n=val(box.querySelector('.ns'));if(!n)return msg('Scrivi il nome della sottocategoria.');if(dup(CATS[c],n))return msg('Esiste già una sottocategoria con questo nome.');CATS[c].push(n);msg('Sottocategoria aggiunta.');return catsChanged()}
+if(a==='rn-m'){ren={c};return renderCats()}
+if(a==='col-m'){colPick=colPick===c?null:c;return renderCats()}
+if(a==='col-set'){COL[c]=+t.dataset.k;colPick=null;msg('Colore aggiornato.');return catsChanged()}
+if(a==='rn-s'){ren={c,s};return renderCats()}
+if(a==='rn-no'){ren=null;return renderCats()}
+if(a==='rn-ok'){if(!ren)return;let fv=$('#cat').value,fw=$('#sub').value;const n=val(t.parentElement.querySelector('.rn'));if(!n)return msg('Il nome non può essere vuoto.');
+if(ren.s===undefined){const N=n.toUpperCase(),o=ren.c;if(dup(Object.keys(CATS),N,o))return msg('Esiste già una macrocategoria con questo nome.');CATS=Object.fromEntries(Object.entries(CATS).map(([k,v])=>[k===o?N:k,v]));EXP=EXP.map(x=>x===o?N:x);if(COL[o]!==undefined){COL[N]=COL[o];delete COL[o]}items.forEach(i=>{if(i.cat===o)i.cat=N});if(filter===o)filter=N;if(fv===o)fv=N;if(sel&&sel[0]===o)sel[0]=N}
+else{const o=ren.s;if(dup(CATS[ren.c],n,o))return msg('Esiste già una sottocategoria con questo nome.');CATS[ren.c]=CATS[ren.c].map(x=>x===o?n:x);items.forEach(i=>{if(i.cat===ren.c&&i.sub===o)i.sub=n});if(fv===ren.c&&fw===o)fw=n;if(sel&&sel[0]===ren.c&&sel[1]===o)sel[1]=n}
+ren=null;msg('Nome aggiornato.');return catsChanged(fv,fw)}
+if(a==='del-m'){const k=cnt(i=>i.cat===c);if(k)return msg(c+' contiene '+k+' prodotti: spostali in un’altra categoria o eliminali prima.');if(Object.keys(CATS).length<2)return msg('Serve almeno una macrocategoria.');delete CATS[c];EXP=EXP.filter(x=>x!==c);if(filter===c)filter='TUTTI';msg('Macrocategoria eliminata.');return catsChanged()}
+if(a==='del-s'){const k=cnt(i=>i.cat===c&&i.sub===s);if(k)return msg(s+' contiene '+k+' prodotti: spostali in un’altra sottocategoria o eliminali prima.');if(CATS[c].length<2)return msg('Serve almeno una sottocategoria.');CATS[c]=CATS[c].filter(x=>x!==s);msg('Sottocategoria eliminata.');return catsChanged()}});
+$('#cats').addEventListener('change',e=>{const t=e.target;if(t.dataset.ca!=='exp')return;const c=t.closest('.cat').dataset.c;EXP=t.checked?[...new Set([...EXP,c])]:EXP.filter(x=>x!==c);catsChanged()});
+$('#cats').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;e.preventDefault();const t=e.target,b=t.id==='nm'?$('[data-ca="add-m"]'):t.parentElement.querySelector('button[data-ca]');if(b)b.click()});
+renderCats();renderBk();render();
+</script><script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
+</script>
+</body></html>
