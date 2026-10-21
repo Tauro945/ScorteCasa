@@ -2,15 +2,6 @@
 <html lang="it"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark"><title>Scorte di casa</title>
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#eef2f1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0f1a19" media="(prefers-color-scheme: dark)">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Scorte">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" href="icons/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -48,6 +39,8 @@ button{font:inherit}
 .qty button,.mini{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:8px;cursor:pointer}
 .qty button{width:36px;height:36px;font-size:20px;line-height:1}
 .mini{padding:6px 10px;font-size:13px}.mini.del{color:var(--red)}
+.flg{width:36px;height:36px;padding:0;border:1px solid var(--line);background:var(--bg);color:var(--mut);border-radius:8px;cursor:pointer;font-size:18px;line-height:1}
+.flg.on{background:color-mix(in srgb,var(--amb) 18%,transparent);color:var(--amb);border-color:var(--amb)}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0}
 .chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px}
@@ -109,7 +102,7 @@ input,select,textarea{min-height:44px;font-size:16px}
 .swb{display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:99px;padding:8px 14px;min-height:40px;cursor:pointer;font-weight:600;font-size:14px}
 .swb:hover,.swb:focus-visible{border-color:var(--mc)}
 .chip[style]::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--mc);margin-right:7px;box-shadow:0 0 0 2px var(--card)}
-@media(pointer:coarse){.qty button{width:44px;height:44px;font-size:24px}.qty span{min-width:32px;font-size:20px}.mini{min-height:44px;font-size:15px;padding:8px 14px}}
+@media(pointer:coarse){.flg{width:44px;height:44px;font-size:22px}.qty button{width:44px;height:44px;font-size:24px}.qty span{min-width:32px;font-size:20px}.mini{min-height:44px;font-size:15px;padding:8px 14px}}
 @media(max-width:560px){.nm{flex:1 1 100%}.qty{margin-left:auto}.row .mini{flex:1 1 40%}form{grid-template-columns:1fr 1fr;padding:14px}#expw{grid-column:1/-1}.pri,.sec{min-height:48px;flex:1}h1{font-size:28px}}
 </style></head><body><main>
 <nav><button data-nav="home" class="on">Riepilogo</button><button data-nav="manage">Prodotti</button></nav>
@@ -137,7 +130,7 @@ input,select,textarea{min-height:44px;font-size:16px}
 <script>
 let CATS={PULIZIA:["Bagno","Pavimenti","Lavatrice","Asciugatrice","Lavastoviglie","Vetri","Aspirapolvere","Altri"],ALIMENTARI:["Pasta","Cereali","Pastine","Riso","Snack","Altri"],COSMETICA:["Corpo","Viso","Doccia","Altri"],FARMACI:["Leo","Influenza","Allergia","Altri"]};
 let EXP=["ALIMENTARI","FARMACI"];let COL={};const DEFC={PULIZIA:0,ALIMENTARI:1,FARMACI:2,COSMETICA:3};const AV=[0,1,2,3,6,7,8,9];const KEY="casa-inventario-v1",CKEY="casa-categorie-v1",TKEY="casa-ultima-modifica-v1",$=s=>document.querySelector(s);let LM=null;const touch=()=>{LM=new Date().toISOString();try{localStorage.setItem(TKEY,LM)}catch(e){}};const lastMod=()=>{try{return localStorage.getItem(TKEY)||LM}catch(e){return LM}};
-const VER="1.8",BKEY="casa-ultimo-backup-v1",RKEY="casa-ultimo-ripristino-v1";const stamp=k=>{try{localStorage.setItem(k,new Date().toISOString())}catch(e){}};const getStamp=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const VER="1.9",BKEY="casa-ultimo-backup-v1",RKEY="casa-ultimo-ripristino-v1";const stamp=k=>{try{localStorage.setItem(k,new Date().toISOString())}catch(e){}};const getStamp=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let items=[],view="home",filter="TUTTI",editId=null,pend=null,expAsk=null;
 try{items=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){items=[]}
@@ -145,7 +138,7 @@ if(!Array.isArray(items))items=[];
 try{const c=JSON.parse(localStorage.getItem(CKEY));if(c&&c.cats&&Object.keys(c.cats).length&&Object.values(c.cats).every(Array.isArray)){CATS=c.cats;EXP=c.exp||[];COL=c.col||{}}}catch(e){}ensureCol();
 const save=()=>{touch();try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){msg("Impossibile salvare in questo browser: genera un backup.")}};
 let mt;const msg=(t,ms=3500)=>{const m=$("#msg");m.textContent=t;clearTimeout(mt);if(t)mt=setTimeout(()=>{m.textContent=""},ms)};
-const st=i=>i.qty<=0?"finito":i.qty<=i.min?"esaurimento":"ok";
+const st=i=>i.qty<=0?"finito":(i.qty<=i.min||i.low)?"esaurimento":"ok";
 const ex=i=>{if(i.qty<=0||!EXP.includes(i.cat))return null;if(!i.exp)return"senza";const d=(new Date(i.exp+"T00:00")-new Date().setHours(0,0,0,0))/864e5;return d<0?"scaduto":d<=30?"scadenza":null};
 const cmp=(a,b)=>String(a).localeCompare(String(b),'it',{sensitivity:'base',numeric:true}),byName=(a,b)=>cmp(a.name,b.name),mk=()=>Object.keys(CATS).sort(cmp),sk=c=>[...(CATS[c]||[])].sort(cmp);
 const rank=i=>st(i)==="finito"?0:ex(i)==="scaduto"?1:ex(i)==="scadenza"?2:st(i)==="esaurimento"?3:4;
@@ -153,7 +146,7 @@ const LBL={finito:"Finito",esaurimento:"In esaurimento",ok:"Disponibile",scaduto
 function ensureCol(){for(const k of Object.keys(COL))if(!CATS[k]||!AV.includes(COL[k]))delete COL[k];const u=new Set(Object.values(COL));for(const c of Object.keys(CATS)){if(COL[c]!==undefined)continue;let k=DEFC[c];if(k===undefined||u.has(k)){k=AV.find(x=>!u.has(x));if(k===undefined)k=AV[Object.keys(COL).length%AV.length]}COL[c]=k;u.add(k)}}
 function row(i,m){const s=st(i),e=ex(i);
 return `<div class="row s-${s}${m&&i.id===editId?" editing":""}${(s==="ok"&&(e==="scadenza"||e==="scaduto"))||(s==="esaurimento"&&e==="scaduto")?" h-"+e+(s==="esaurimento"?" t-amb":""):""}" data-id="${i.id}"><div class="nm"><b>${esc(i.name)}</b><small><span class="mt" style="--mc:var(--m${COL[i.cat]??0})">${esc(i.cat)}</span>${esc(i.sub)} · minimo ${i.min}${i.exp&&EXP.includes(i.cat)?" · scade il "+new Date(i.exp+"T00:00").toLocaleDateString("it-IT"):""}</small></div>
-<span class="tag ${s}">${LBL[s]}</span>${e?`<span class="tag ${e}">${LBL[e]}</span>`:""}
+<span class="tag ${s}">${LBL[s]}</span>${i.qty>0&&(s==="ok"||i.low)?`<button class="flg${i.low?" on":""}" data-act="low" aria-pressed="${!!i.low}" aria-label="Quasi finito" title="Quasi finito">${i.low?"⚑":"⚐"}</button>`:""}${e?`<span class="tag ${e}">${LBL[e]}</span>`:""}
 <div class="qty"><button data-act="dec" aria-label="Diminuisci">−</button><span>${i.qty}</span><button data-act="inc" aria-label="Aumenta">+</button></div>
 ${m?`<button class="mini" data-act="edit">Modifica</button><button class="mini del" data-act="del">${pend===i.id?"Conferma?":"Elimina"}</button>`:""}${expAsk===i.id?`<div class="xa"><label>Aggiorna scadenza<input type="date" class="xd" value="${esc(i.exp||"")}"></label><button class="mini" data-act="exp-ok">Salva scadenza</button><button class="mini" data-act="exp-no">Lascia così</button></div>`:""}</div>`}
 function grouped(m,f){let h="";for(const c of mk()){if(f&&f!=="TUTTI"&&f!==c)continue;const ci=items.filter(i=>i.cat===c);if(!ci.length)continue;
@@ -187,7 +180,7 @@ $("#f").onsubmit=e=>{e.preventDefault();const name=$("#name").value.trim();if(!n
 const dp=items.find(x=>x.id!==editId&&fold(x.name)===fold(name));if(dp&&dupKey!==fold(name)){dupKey=fold(name);return msg("Attenzione: «"+dp.name+"» esiste già in "+dp.cat+" › "+dp.sub+". Premi di nuovo "+(editId?"Salva modifiche":"Aggiungi prodotto")+" per confermare.",6000)}
 const it={id:editId||Date.now().toString(36)+Math.random().toString(36).slice(2,5),cat:$("#cat").value,sub:$("#sub").value,name,qty:Math.max(0,parseInt($("#qty").value)||0),min:Math.max(0,parseInt($("#min").value)||0),exp:EXP.includes($("#cat").value)?$("#exp").value:""};
 const need0=EXP.includes(it.cat)&&!it.exp?" Attenzione: manca la scadenza.":"";
-if(editId){const o=items.find(i=>i.id===editId);items=items.map(i=>i.id===editId?it:i);const lost=o&&o.exp&&!it.exp&&!EXP.includes(it.cat)?" Attenzione: la nuova categoria non ha scadenza, la data è stata rimossa.":"";msg("Modifiche salvate."+lost+need0,lost||need0?6000:3500)}else{items.push(it);msg("Prodotto aggiunto."+need0,need0?6000:3500)}
+if(editId){const o=items.find(i=>i.id===editId);it.low=!!(o&&o.low&&o.qty===it.qty);items=items.map(i=>i.id===editId?it:i);const lost=o&&o.exp&&!it.exp&&!EXP.includes(it.cat)?" Attenzione: la nuova categoria non ha scadenza, la data è stata rimossa.":"";msg("Modifiche salvate."+lost+need0,lost||need0?6000:3500)}else{items.push(it);msg("Prodotto aggiunto."+need0,need0?6000:3500)}
 if(!editId)sel=[$("#cat").value,$("#sub").value];save();reset();render();if(matchMedia("(pointer:fine)").matches)$("#name").focus();else document.activeElement.blur()};
 document.addEventListener("click",e=>{const t=e.target.closest("button");if(!t)return;
 if(t.dataset.nav){view=t.dataset.nav;pend=null;expAsk=null;render();window.scrollTo(0,0);return}
@@ -195,7 +188,8 @@ if(t.dataset.f){filter=t.dataset.f;renderHome();return}
 const r=t.closest(".row"),id=r&&r.dataset.id,i=items.find(x=>x.id===id),a=t.dataset.act;if(!a||!i)return;
 if(a==="exp-ok"){const v=r.querySelector(".xd").value;if(!v)return msg("Scegli una data di scadenza.");i.exp=v;expAsk=null;save();msg("Scadenza aggiornata.");render();return}
 if(a==="exp-no"){expAsk=null;render();return}
-if(a==="inc"||a==="dec"){i.qty=Math.max(0,i.qty+(a==="inc"?1:-1));expAsk=EXP.includes(i.cat)&&i.qty>0?i.id:null;save();render()}
+if(a==="low"){i.low=!i.low;expAsk=null;save();render();return}
+if(a==="inc"||a==="dec"){i.low=false;i.qty=Math.max(0,i.qty+(a==="inc"?1:-1));expAsk=EXP.includes(i.cat)&&i.qty>0?i.id:null;save();render()}
 else if(a==="edit"){expAsk=null;editId=i.id;$("#cat").value=i.cat;fillSub(i.sub);$("#name").value=i.name;$("#qty").value=i.qty;$("#min").value=i.min;$("#exp").value=i.exp||"";$("#ok").textContent="Salva modifiche";$("#no").hidden=false;renderManage();msg("Modifica in corso: "+i.name);window.scrollTo({top:0,behavior:"smooth"});if(matchMedia("(pointer:fine)").matches)$("#name").focus()}
 else if(a==="del"){expAsk=null;if(pend===id){items=items.filter(x=>x.id!==id);pend=null;save();msg("Prodotto eliminato.")}else pend=id;render()}});
 let DL=null;try{window.claude&&window.claude.use("downloads").then(d=>{DL=d}).catch(()=>{})}catch(e){}
@@ -239,7 +233,4 @@ if(a==='del-s'){const k=cnt(i=>i.cat===c&&i.sub===s);if(k)return msg(s+' contien
 $('#cats').addEventListener('change',e=>{const t=e.target;if(t.dataset.ca!=='exp')return;const c=t.closest('.cat').dataset.c;EXP=t.checked?[...new Set([...EXP,c])]:EXP.filter(x=>x!==c);catsChanged()});
 $('#cats').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.target.tagName!=='INPUT')return;e.preventDefault();const t=e.target,b=t.id==='nm'?$('[data-ca="add-m"]'):t.parentElement.querySelector('button[data-ca]');if(b)b.click()});
 renderCats();renderBk();render();
-</script><script>
-if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{})})}
-</script>
-</body></html>
+</script></body></html>
